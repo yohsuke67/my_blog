@@ -1,12 +1,14 @@
 class PostsController < ApplicationController
+  before_action :set_post, only: [ :show, :edit, :update, :destroy]
+
   def index
-    @posts = Post.all
-    @new_posts=Post.all
+    @posts = Post.order(created_at: :desc)
+    @new_posts=Post.order(created_at: :desc).limit(5)
     @author = Author.first
   end
 
   def show
-    @post = Post.find(params[:id])
+    set_post
   end
 
   def new
@@ -23,21 +25,19 @@ class PostsController < ApplicationController
     redirect_to @post
   end
 
-  def edit
-    @post = Post.find(params[:id])
-  
-    
+  def edit    
+    set_post
   end
 
   def update
-    @post = Post.find (params[:id])
+    set_post
     @post.update(post_params)
     redirect_to edit_post_path
 
   end
 
   def destroy
-    @post = Post.find (params[:id])
+    set_post
     @post.destroy
     redirect_to posts_path
   end
@@ -47,5 +47,9 @@ class PostsController < ApplicationController
 
   def post_params
     params.require(:post).permit(:title, :body, :category)
+  end
+
+  def set_post
+    @post = Post.find(params[:id])
   end
 end
